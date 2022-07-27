@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/dollarkillerx/inventory/internal/pkg/errs"
@@ -37,6 +38,8 @@ func (s *Server) userCenter(ctx *gin.Context) {
 		response.Return(ctx, errs.SystemError)
 		return
 	}
+
+	fmt.Println(token)
 
 	response.Return(ctx, response.UserLogin{
 		JWT:        token,

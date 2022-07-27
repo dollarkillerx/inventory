@@ -10,6 +10,7 @@ func (s *Server) router() {
 	{
 		v1.GET("/goods", s.Goods)
 		v1.GET("/good/:barcodes", s.Good)
+		v1.POST("/good", s.AddGood)
 		v1.POST("/upload", s.UploadFile)
 	}
 }

@@ -3,6 +3,7 @@ package simple
 import (
 	"github.com/dollarkillerx/inventory/internal/pkg/models"
 	"github.com/rs/xid"
+	"log"
 )
 
 func (s *Simple) Goods() {
@@ -19,6 +20,7 @@ func (s *Simple) Good(barcodes string, account string) (*models.TemporaryGoodsIn
 	var inv models.Inventory
 	err = s.DB().Model(&models.Inventory{}).Where("barcode = ?", barcodes).Where("account = ?", account).First(&inv).Error
 	if err != nil {
+		log.Println(err)
 		err := s.DB().Model(&models.Inventory{}).Create(&models.Inventory{
 			BasicModel: models.BasicModel{ID: xid.New().String()},
 			GoodsID:    good.ID,
@@ -31,9 +33,9 @@ func (s *Simple) Good(barcodes string, account string) (*models.TemporaryGoodsIn
 	}
 
 	return &models.TemporaryGoodsInventories{
-		Goods:    good,
-		Quantity: inv.Quantity,
-		Cost:     inv.Cost,
+		Goods:     good,
+		Quantity:  inv.Quantity,
+		TotalCost: inv.Cost,
 	}, nil
 
 	//var good models.TemporaryGoodsInventories

@@ -6,7 +6,7 @@ type Inventory struct {
 	GoodsID  string  `gorm:"type:varchar(300);index" json:"goods_id"` // 商品
 	Barcode  string  `gorm:"type:varchar(300);index" json:"barcode"`  // 條形碼
 	Account  string  `gorm:"type:varchar(300);index" json:"account"`  // 創建用戶
-	Quantity int     `gorm:"type:varchar(300);index" json:"quantity"` // 库存数量
+	Quantity int     `json:"quantity"`                                // 库存数量
 	Cost     float64 `gorm:"type:NUMERIC(20,7)" json:"cost"`          // 成本
 }
 
