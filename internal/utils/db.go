@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 
-	"github.com/dollarkillerx/RubiesCube/internal/conf"
+	"github.com/dollarkillerx/inventory/internal/conf"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

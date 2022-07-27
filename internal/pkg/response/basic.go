@@ -1,8 +1,8 @@
 package response
 
 import (
-	"github.com/dollarkillerx/RubiesCube/internal/pkg/enum"
-	"github.com/dollarkillerx/RubiesCube/internal/pkg/errs"
+	"github.com/dollarkillerx/inventory/internal/pkg/enum"
+	"github.com/dollarkillerx/inventory/internal/pkg/errs"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"github.com/dollarkillerx/RubiesCube/internal/conf"
-	"github.com/dollarkillerx/RubiesCube/internal/pkg/enum"
-	"github.com/dollarkillerx/RubiesCube/internal/pkg/request"
+	"github.com/dollarkillerx/inventory/internal/conf"
+	"github.com/dollarkillerx/inventory/internal/pkg/enum"
+	"github.com/dollarkillerx/inventory/internal/pkg/request"
 	"github.com/dollarkillerx/jwt"
 	"github.com/gin-gonic/gin"
 )

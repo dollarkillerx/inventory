@@ -13,3 +13,9 @@ type Goods struct {
 	Img       string  `gorm:"type:varchar(600)" json:"img"`              // img
 	ByAccount string  `gorm:"type:varchar(300);index" json:"by_account"` // 創建用戶
 }
+
+type TemporaryGoodsInventories struct {
+	Goods
+	Quantity int     `gorm:"type:varchar(300);index" json:"quantity"` // 库存数量
+	Cost     float64 `gorm:"type:NUMERIC(20,7)" json:"cost"`          // 成本
+}

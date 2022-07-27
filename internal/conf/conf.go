@@ -14,12 +14,21 @@ type PgSQLConfig struct {
 	Port     int    `json:"port"`
 }
 
+type OSSConf struct {
+	Bucket    string `json:"bucket"`
+	Region    string `json:"region"`
+	Url       string `json:"url"`
+	SecretID  string `json:"secret_id"`
+	SecretKey string `json:"secret_key"`
+}
+
 type conf struct {
 	ListenAddr string `json:"listen_addr"`
 
 	Salt        string      `json:"salt"`
 	JWTToken    string      `json:"jwt_token"`
 	PgSQLConfig PgSQLConfig `json:"pgsql_config"`
+	OSSConf     OSSConf     `json:"oss_conf"`
 }
 
 var CONF *conf

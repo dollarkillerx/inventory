@@ -8,4 +8,5 @@ import (
 type Interface interface {
 	DB() *gorm.DB
 	GetUserCenter(account string) (*models.UserCenter, error)
+	Good(barcodes string, account string) (*models.TemporaryGoodsInventories, error)
 }
