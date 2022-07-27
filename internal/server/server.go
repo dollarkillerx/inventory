@@ -20,7 +20,6 @@ func NewServer() *Server {
 }
 
 func (s *Server) Run() error {
-	s.router()
 	newSimple, err := simple.NewSimple(&conf.CONF.PgSQLConfig)
 	if err != nil {
 		return err
@@ -28,9 +27,11 @@ func (s *Server) Run() error {
 
 	s.storage = newSimple
 
+	s.app.Use(middleware.SetBasicInformation())
 	s.app.Use(middleware.Cors())
 	s.app.Use(middleware.HttpRecover())
-	s.app.Use(middleware.SetBasicInformation())
+
+	s.router()
 
 	return s.app.Run(conf.CONF.ListenAddr)
 }
