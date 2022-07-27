@@ -10,6 +10,5 @@ func (s *Server) Goods(ctx *gin.Context) {
 }
 
 func (s *Server) Good(ctx *gin.Context) {
-	//barcodes := ctx.Param("barcodes")
 
 }
