@@ -9,7 +9,7 @@ func (s *Server) router() {
 	v1 := s.app.Group("/api/v1", middleware.UAAuthorization())
 	{
 		v1.GET("/goods", s.Goods)
-		v1.GET("/good/:barcodes", s.Goods)
+		v1.GET("/good/:barcodes", s.Good)
 		v1.POST("/upload", s.UploadFile)
 	}
 }
