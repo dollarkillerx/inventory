@@ -8,14 +8,26 @@ import (
 	"github.com/dollarkillerx/inventory/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/xid"
-	"strings"
 
 	"log"
+	"strings"
 )
 
 func (s *Server) Goods(ctx *gin.Context) {
 	//model := utils.GetAuthModel(ctx)
+}
 
+func (s *Server) Search(ctx *gin.Context) {
+	model := utils.GetAuthModel(ctx)
+
+	keyword := ctx.Query("keyword")
+	search, err := s.storage.Search(keyword, model.Account)
+	if err != nil {
+		response.Return(ctx, errs.BadRequest)
+		return
+	}
+
+	response.Return(ctx, search)
 }
 
 func (s *Server) Good(ctx *gin.Context) {
