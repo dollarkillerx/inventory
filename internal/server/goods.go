@@ -8,6 +8,7 @@ import (
 	"github.com/dollarkillerx/inventory/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/xid"
+	"strings"
 
 	"log"
 )
@@ -42,7 +43,7 @@ func (s *Server) AddGood(ctx *gin.Context) {
 		return
 	}
 
-	if len(good.Brand) != 13 {
+	if len(good.Barcode) != 13 {
 		response.Return(ctx, errs.NewError("40001", "条形码不合法 长度不为 13"))
 		return
 	}
@@ -60,6 +61,10 @@ func (s *Server) AddGood(ctx *gin.Context) {
 		ByAccount:  model.Account,
 	}).Error
 	if err != nil {
+		if strings.Contains(err.Error(), "unique") {
+			response.Return(ctx, errs.NewError("4002", "商品以存在"))
+			return
+		}
 		log.Println(err)
 		response.Return(ctx, errs.SqlSystemError)
 		return

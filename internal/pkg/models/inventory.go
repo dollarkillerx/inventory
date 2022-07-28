@@ -7,7 +7,7 @@ type Inventory struct {
 	Barcode  string  `gorm:"type:varchar(300);index" json:"barcode"`  // 條形碼
 	Account  string  `gorm:"type:varchar(300);index" json:"account"`  // 創建用戶
 	Quantity int     `json:"quantity"`                                // 库存数量
-	Cost     float64 `gorm:"type:NUMERIC(20,7)" json:"cost"`          // 成本
+	Cost     float64 `gorm:"type:NUMERIC(20,7)" json:"cost"`          // 总成本
 }
 
 // InventoryModify 修改库存
@@ -25,8 +25,8 @@ type InventoryModify struct {
 type InventoryHistoryType string
 
 const (
-	InventoryHistoryTypeWarehousing InventoryHistoryType = "warehousing"
-	InventoryHistoryTypeDepot       InventoryHistoryType = "depot"
+	InventoryHistoryTypeWarehousing InventoryHistoryType = "warehousing" // 入库
+	InventoryHistoryTypeDepot       InventoryHistoryType = "depot"       // 出库
 )
 
 // InventoryHistory 庫存記錄
@@ -49,7 +49,7 @@ type InventoryHistoryDetailed struct {
 	GoodsID        string               `gorm:"type:varchar(300);index" json:"goods_id"`   // 商品
 	Account        string               `gorm:"type:varchar(300);index" json:"account"`    // 創建用戶
 	TotalPrice     float64              `gorm:"type:NUMERIC(20,7)" json:"total_price"`     // 總價
-	TotalCost      float64              `gorm:"type:NUMERIC(20,7)" json:"total_cost"`      // 縂成本
 	GrossProfit    float64              `gorm:"type:NUMERIC(20,7)" json:"gross_profit"`    // 毛利
+	TotalCost      float64              `gorm:"type:NUMERIC(20,7)" json:"total_cost"`      // 縂成本
 	NumberProducts int                  `gorm:"type:NUMERIC(20,7)" json:"number_products"` // 商品數量
 }

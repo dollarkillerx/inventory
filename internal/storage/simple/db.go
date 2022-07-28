@@ -4,10 +4,13 @@ import (
 	"github.com/dollarkillerx/inventory/internal/conf"
 	"github.com/dollarkillerx/inventory/internal/utils"
 	"gorm.io/gorm"
+	"sync"
 )
 
 type Simple struct {
 	db *gorm.DB
+
+	inventoryMu sync.Mutex
 }
 
 func NewSimple(conf *conf.PgSQLConfig) (*Simple, error) {
