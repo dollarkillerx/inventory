@@ -5,7 +5,7 @@ import (
 	"github.com/rs/xid"
 )
 
-func (s *Simple) WareHousing(goodsId string, barcode string, account string, cost float64, numberProducts int) (err error) {
+func (s *Simple) WareHousing(goodsId string, barcode string, account string, cost float64, numberProducts int, remark string) (err error) {
 	s.inventoryMu.Lock()
 	defer func() {
 		s.inventoryMu.Unlock()
@@ -27,6 +27,7 @@ func (s *Simple) WareHousing(goodsId string, barcode string, account string, cos
 		Account:        account,
 		TotalCost:      cost,
 		NumberProducts: numberProducts,
+		Remark:         remark,
 	}).Error
 	if err != nil {
 		return err
@@ -41,6 +42,7 @@ func (s *Simple) WareHousing(goodsId string, barcode string, account string, cos
 		Account:        account,
 		TotalCost:      cost,
 		NumberProducts: numberProducts,
+		Remark:         remark,
 	}).Error
 	if err != nil {
 		return err
@@ -71,7 +73,7 @@ func (s *Simple) WareHousing(goodsId string, barcode string, account string, cos
 	return nil
 }
 
-func (s *Simple) OutStock(goodsId string, barcode string, account string, cost float64, numberProducts int, price float64) (err error) {
+func (s *Simple) OutStock(goodsId string, barcode string, account string, cost float64, numberProducts int, price float64, remark string) (err error) {
 	s.inventoryMu.Lock()
 	defer func() {
 		s.inventoryMu.Unlock()
@@ -95,6 +97,7 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 		TotalPrice:     price,
 		GrossProfit:    price - cost,
 		NumberProducts: numberProducts,
+		Remark:         remark,
 	}).Error
 	if err != nil {
 		return err
@@ -111,6 +114,7 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 		TotalPrice:     price,
 		GrossProfit:    price - cost,
 		NumberProducts: numberProducts,
+		Remark:         remark,
 	}).Error
 	if err != nil {
 		return err

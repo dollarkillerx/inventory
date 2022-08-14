@@ -38,6 +38,7 @@ type InventoryHistory struct {
 	TotalCost      float64              `gorm:"type:NUMERIC(20,7)" json:"total_cost"`      // 縂成本
 	GrossProfit    float64              `gorm:"type:NUMERIC(20,7)" json:"gross_profit"`    // 毛利
 	NumberProducts int                  `gorm:"type:NUMERIC(20,7)" json:"number_products"` // 商品數量
+	Remark         string               `gorm:"type:varchar(700)" json:"remark"`
 }
 
 // InventoryHistoryDetailed 庫存記錄詳細
@@ -52,4 +53,5 @@ type InventoryHistoryDetailed struct {
 	GrossProfit    float64              `gorm:"type:NUMERIC(20,7)" json:"gross_profit"`    // 毛利
 	TotalCost      float64              `gorm:"type:NUMERIC(20,7)" json:"total_cost"`      // 縂成本
 	NumberProducts int                  `gorm:"type:NUMERIC(20,7)" json:"number_products"` // 商品數量
+	Remark         string               `gorm:"type:varchar(700)" json:"remark"`
 }

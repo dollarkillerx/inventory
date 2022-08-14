@@ -10,8 +10,8 @@ import (
 func main() {
 	utils.InitJWT()
 
-	server := server.NewServer()
-	if err := server.Run(); err != nil {
+	ser := server.NewServer()
+	if err := ser.Run(); err != nil {
 		log.Fatalln(err)
 	}
 }

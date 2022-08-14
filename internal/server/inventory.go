@@ -26,7 +26,7 @@ func (s *Server) wareHousing(ctx *gin.Context) {
 		return
 	}
 
-	err = s.storage.WareHousing(vg.Goods.ID, vg.Barcode, model.Account, war.Cost, war.NumberProducts)
+	err = s.storage.WareHousing(vg.Goods.ID, vg.Barcode, model.Account, war.Cost, war.NumberProducts, war.Remark)
 	if err != nil {
 		log.Println(err)
 		response.Return(ctx, errs.SqlSystemError)
@@ -52,7 +52,7 @@ func (s *Server) outStock(ctx *gin.Context) {
 		return
 	}
 
-	err = s.storage.OutStock(vg.Goods.ID, vg.Barcode, model.Account, war.Cost, war.NumberProducts, war.Price)
+	err = s.storage.OutStock(vg.Goods.ID, vg.Barcode, model.Account, war.Cost, war.NumberProducts, war.Price, war.Remark)
 	if err != nil {
 		log.Println(err)
 		response.Return(ctx, errs.SqlSystemError)
