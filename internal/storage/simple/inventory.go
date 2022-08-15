@@ -144,3 +144,11 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 
 	return nil
 }
+
+func (s *Simple) IOHistory(goodsID string, account string) (resp []models.InventoryHistoryDetailed, err error) {
+	err = s.db.Model(&models.InventoryHistoryDetailed{}).
+		Where("goods_id = ?", goodsID).
+		Where("account = ?", account).Order("created_at desc").Find(&resp).Error
+
+	return
+}

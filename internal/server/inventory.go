@@ -61,3 +61,20 @@ func (s *Server) outStock(ctx *gin.Context) {
 
 	response.Return(ctx, gin.H{})
 }
+
+func (s *Server) ioHistory(ctx *gin.Context) {
+	model := utils.GetAuthModel(ctx)
+	barcodes := ctx.Param("barcodes")
+	history, err := s.storage.IOHistory(barcodes, model.Account)
+	if err != nil {
+		log.Println(err)
+		response.Return(ctx, errs.BadRequest)
+		return
+	}
+
+	response.Return(ctx, history)
+}
+
+func (s *Server) iORevoke(ctx *gin.Context) {
+
+}
