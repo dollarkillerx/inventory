@@ -38,7 +38,7 @@ func (s *Simple) Good(barcodes string, account string) (*models.TemporaryGoodsIn
 	}
 
 	var inv models.Inventory
-	err = s.DB().Model(&models.Inventory{}).Where("barcode = ?", barcodes).Where("account = ?", account).First(&inv).Error
+	err = s.DB().Model(&models.Inventory{}).Where("id = ?", good.ID).Where("account = ?", account).First(&inv).Error
 	if err != nil {
 		log.Println(err)
 		err := s.DB().Model(&models.Inventory{}).Create(&models.Inventory{
