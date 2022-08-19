@@ -19,7 +19,7 @@ func (s *Server) router() {
 		v1.POST("/upload", s.UploadFile)
 		v1.POST("/warehousing", s.wareHousing)       // 入库
 		v1.POST("/out_stock", s.outStock)            // 出库
-		v1.GET("/io_history/:barcodes", s.ioHistory) // io history 出入庫記錄
+		v1.GET("/io_history/:goods_id", s.ioHistory) // io history 出入庫記錄
 		v1.GET("/io_revoke", s.iORevoke)             // 撤銷出入庫記錄
 	}
 }

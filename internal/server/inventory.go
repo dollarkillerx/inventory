@@ -64,7 +64,7 @@ func (s *Server) outStock(ctx *gin.Context) {
 
 func (s *Server) ioHistory(ctx *gin.Context) {
 	model := utils.GetAuthModel(ctx)
-	barcodes := ctx.Param("barcodes")
+	barcodes := ctx.Param("goods_id")
 	history, err := s.storage.IOHistory(barcodes, model.Account)
 	if err != nil {
 		log.Println(err)

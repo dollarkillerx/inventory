@@ -2,7 +2,6 @@ package simple
 
 import (
 	"github.com/dollarkillerx/inventory/internal/conf"
-	"github.com/dollarkillerx/inventory/internal/pkg/models"
 	"github.com/dollarkillerx/inventory/internal/utils"
 	"gorm.io/gorm"
 	"sync"
@@ -20,15 +19,15 @@ func NewSimple(conf *conf.PgSQLConfig) (*Simple, error) {
 		return nil, err
 	}
 
-	sql.AutoMigrate(
-		&models.UserCenter{},
-		//&models.Goods{},
-		&models.History{},
-		&models.Inventory{},
-		&models.InventoryModify{},
-		&models.InventoryHistory{},
-		&models.InventoryHistoryDetailed{},
-	)
+	//sql.AutoMigrate(
+	//	&models.UserCenter{},
+	//	//&models.Goods{},
+	//	&models.History{},
+	//	&models.Inventory{},
+	//	&models.InventoryModify{},
+	//	&models.InventoryHistory{},
+	//	&models.InventoryHistoryDetailed{},
+	//)
 
 	return &Simple{
 		db: sql,
