@@ -19,6 +19,7 @@ func UAAuthorization() gin.HandlerFunc {
 			response.Return(ctx, errs.PleaseSignIn)
 			return
 		}
+		log.Println(tokenStr)
 
 		token, err := jwt.TokenFormatString(tokenStr)
 		if err != nil {

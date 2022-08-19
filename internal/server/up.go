@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/rs/xid"
 	"log"
 	"net/http"
 	"net/url"
@@ -14,6 +13,7 @@ import (
 	"github.com/dollarkillerx/inventory/internal/pkg/response"
 	"github.com/dollarkillerx/inventory/internal/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/xid"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"github.com/tencentyun/cos-go-sdk-v5/debug"
 )
