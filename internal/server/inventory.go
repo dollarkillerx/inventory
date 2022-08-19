@@ -76,5 +76,21 @@ func (s *Server) ioHistory(ctx *gin.Context) {
 }
 
 func (s *Server) iORevoke(ctx *gin.Context) {
+	model := utils.GetAuthModel(ctx)
 
+	var payload request.IORevoke
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		log.Println(err)
+		response.Return(ctx, errs.BadRequest)
+		return
+	}
+
+	revoke, err := s.storage.IORevoke(payload.OrderID, model.Account)
+	if err != nil {
+		log.Println(err)
+		response.Return(ctx, errs.NewError("403", "當前訂單可能存在子訂單 無權刪除"))
+		return
+	}
+
+	response.Return(ctx, revoke)
 }

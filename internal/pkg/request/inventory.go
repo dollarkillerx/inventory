@@ -14,3 +14,7 @@ type OutStock struct {
 	NumberProducts int     `json:"number_products" binding:"required"`
 	Remark         string  `json:"remark"`
 }
+
+type IORevoke struct {
+	OrderID string `json:"order_id" binding:"required"`
+}

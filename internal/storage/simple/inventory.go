@@ -2,6 +2,7 @@ package simple
 
 import (
 	"github.com/dollarkillerx/inventory/internal/pkg/models"
+	"github.com/pkg/errors"
 	"github.com/rs/xid"
 )
 
@@ -149,6 +150,76 @@ func (s *Simple) IOHistory(goodsID string, account string) (resp []models.Invent
 	err = s.db.Model(&models.InventoryHistoryDetailed{}).
 		Where("goods_id = ?", goodsID).
 		Where("account = ?", account).Order("created_at desc").Find(&resp).Error
+
+	return
+}
+
+func (s *Simple) IORevoke(orderID string, account string) (result []models.InventoryHistoryDetailed, err error) {
+	s.inventoryMu.Lock()
+	defer func() {
+		s.inventoryMu.Unlock()
+	}()
+
+	begin := s.db.Begin()
+
+	defer func() {
+		if err == nil {
+			begin.Commit()
+		} else {
+			begin.Rollback()
+		}
+	}()
+
+	var orderDetailed models.InventoryHistoryDetailed
+	err = begin.Model(&models.InventoryHistoryDetailed{}).
+		Where("id = ?", orderID).
+		Where("account = ?", account).First(&orderDetailed).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var count int64
+	err = begin.Model(&models.InventoryHistoryDetailed{}).Where("order_id = ?", orderDetailed.OrderID).Count(&count).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if count != 1 {
+		return nil, errors.New("當前訂單存在子訂單 無權刪除")
+	}
+
+	var goodsInventories models.TemporaryGoodsInventories
+	err = begin.Model(&models.Inventory{}).
+		Where("account = ?", account).
+		Where("goods_id = ?", orderDetailed.GoodsID).First(&goodsInventories).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = begin.Model(&models.InventoryHistoryDetailed{}).Where("id = ?", orderID).Delete(&models.InventoryHistoryDetailed{}).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = begin.Model(&models.InventoryHistory{}).Where("id = ?", orderDetailed.OrderID).Delete(&models.InventoryHistory{}).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = begin.Model(&models.Inventory{}).
+		Where("account = ?", account).
+		Where("goods_id = ?", orderDetailed.GoodsID).
+		Updates(map[string]interface{}{
+			"quantity": goodsInventories.Quantity - orderDetailed.NumberProducts,
+			"cost":     goodsInventories.Cost - orderDetailed.TotalCost,
+		}).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.db.Model(&models.InventoryHistoryDetailed{}).
+		Where("goods_id = ?", orderDetailed.GoodsID).
+		Where("account = ?", account).Order("created_at desc").Find(&result).Error
 
 	return
 }
