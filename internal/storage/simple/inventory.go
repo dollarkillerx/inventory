@@ -4,6 +4,8 @@ import (
 	"github.com/dollarkillerx/inventory/internal/pkg/models"
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
+	"log"
+	"strings"
 )
 
 func (s *Simple) WareHousing(goodsId string, barcode string, account string, cost float64, numberProducts int, remark string) (err error) {
@@ -22,7 +24,7 @@ func (s *Simple) WareHousing(goodsId string, barcode string, account string, cos
 	}()
 
 	ihid := xid.New().String()
-	err = s.DB().Model(&models.InventoryHistory{}).Create(&models.InventoryHistory{
+	err = begin.Model(&models.InventoryHistory{}).Create(&models.InventoryHistory{
 		BasicModel:     models.BasicModel{ID: ihid},
 		InventoryType:  models.InventoryHistoryTypeWarehousing,
 		Account:        account,
@@ -34,7 +36,7 @@ func (s *Simple) WareHousing(goodsId string, barcode string, account string, cos
 		return err
 	}
 
-	err = s.DB().Model(&models.InventoryHistoryDetailed{}).Create(&models.InventoryHistoryDetailed{
+	err = begin.Model(&models.InventoryHistoryDetailed{}).Create(&models.InventoryHistoryDetailed{
 		BasicModel:     models.BasicModel{ID: xid.New().String()},
 		InventoryType:  models.InventoryHistoryTypeWarehousing,
 		OrderID:        ihid,
@@ -50,7 +52,7 @@ func (s *Simple) WareHousing(goodsId string, barcode string, account string, cos
 	}
 
 	var inv models.Inventory
-	err = s.DB().Model(&models.Inventory{}).
+	err = begin.Model(&models.Inventory{}).
 		Where("goods_id = ?", goodsId).
 		Where("account = ?", account).First(&inv).Error
 	if err != nil {
@@ -60,7 +62,7 @@ func (s *Simple) WareHousing(goodsId string, barcode string, account string, cos
 	inv.Quantity += numberProducts
 	inv.Cost += cost
 
-	err = s.DB().Model(&models.Inventory{}).
+	err = begin.Model(&models.Inventory{}).
 		Where("goods_id = ?", goodsId).
 		Where("account = ?", account).
 		Updates(map[string]interface{}{
@@ -90,7 +92,7 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 	}()
 
 	ihid := xid.New().String()
-	err = s.DB().Model(&models.InventoryHistory{}).Create(&models.InventoryHistory{
+	err = begin.Model(&models.InventoryHistory{}).Create(&models.InventoryHistory{
 		BasicModel:     models.BasicModel{ID: ihid},
 		InventoryType:  models.InventoryHistoryTypeDepot,
 		Account:        account,
@@ -104,7 +106,7 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 		return err
 	}
 
-	err = s.DB().Model(&models.InventoryHistoryDetailed{}).Create(&models.InventoryHistoryDetailed{
+	err = begin.Model(&models.InventoryHistoryDetailed{}).Create(&models.InventoryHistoryDetailed{
 		BasicModel:     models.BasicModel{ID: xid.New().String()},
 		InventoryType:  models.InventoryHistoryTypeDepot,
 		OrderID:        ihid,
@@ -122,7 +124,7 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 	}
 
 	var inv models.Inventory
-	err = s.DB().Model(&models.Inventory{}).
+	err = begin.Model(&models.Inventory{}).
 		Where("goods_id = ?", goodsId).
 		Where("account = ?", account).First(&inv).Error
 	if err != nil {
@@ -132,7 +134,7 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 	inv.Quantity -= numberProducts
 	inv.Cost -= cost
 
-	err = s.DB().Model(&models.Inventory{}).
+	err = begin.Model(&models.Inventory{}).
 		Where("goods_id = ?", goodsId).
 		Where("account = ?", account).
 		Updates(map[string]interface{}{
@@ -188,7 +190,7 @@ func (s *Simple) IORevoke(orderID string, account string) (result []models.Inven
 		return nil, errors.New("當前訂單存在子訂單 無權刪除")
 	}
 
-	var goodsInventories models.TemporaryGoodsInventories
+	var goodsInventories models.Inventory
 	err = begin.Model(&models.Inventory{}).
 		Where("account = ?", account).
 		Where("goods_id = ?", orderDetailed.GoodsID).First(&goodsInventories).Error
@@ -206,20 +208,132 @@ func (s *Simple) IORevoke(orderID string, account string) (result []models.Inven
 		return nil, err
 	}
 
-	err = begin.Model(&models.Inventory{}).
-		Where("account = ?", account).
-		Where("goods_id = ?", orderDetailed.GoodsID).
-		Updates(map[string]interface{}{
-			"quantity": goodsInventories.Quantity - orderDetailed.NumberProducts,
-			"cost":     goodsInventories.Cost - orderDetailed.TotalCost,
-		}).Error
-	if err != nil {
-		return nil, err
+	switch orderDetailed.InventoryType {
+	case models.InventoryHistoryTypeWarehousing:
+		err = begin.Model(&models.Inventory{}).
+			Where("account = ?", account).
+			Where("goods_id = ?", orderDetailed.GoodsID).
+			Updates(map[string]interface{}{
+				"quantity": goodsInventories.Quantity - orderDetailed.NumberProducts,
+				"cost":     goodsInventories.Cost - orderDetailed.TotalCost,
+			}).Error
+		if err != nil {
+			return nil, err
+		}
+	case models.InventoryHistoryTypeDepot:
+		err = begin.Model(&models.Inventory{}).
+			Where("account = ?", account).
+			Where("goods_id = ?", orderDetailed.GoodsID).
+			Updates(map[string]interface{}{
+				"quantity": goodsInventories.Quantity + orderDetailed.NumberProducts,
+				"cost":     goodsInventories.Cost + orderDetailed.TotalCost,
+			}).Error
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	err = s.db.Model(&models.InventoryHistoryDetailed{}).
+	err = begin.Model(&models.InventoryHistoryDetailed{}).
 		Where("goods_id = ?", orderDetailed.GoodsID).
 		Where("account = ?", account).Order("created_at desc").Find(&result).Error
+
+	return
+}
+
+func (s *Simple) ResetStatistics() (err error) {
+	s.inventoryMu.Lock()
+	defer func() {
+		s.inventoryMu.Unlock()
+	}()
+
+	begin := s.db.Begin()
+
+	defer func() {
+		if err == nil {
+			begin.Commit()
+		} else {
+			begin.Rollback()
+		}
+	}()
+
+	var ih []models.InventoryHistory
+	err = begin.Model(&models.InventoryHistory{}).Find(&ih).Error
+	if err != nil {
+		return err
+	}
+
+	for _, v := range ih {
+		var ihd []models.InventoryHistoryDetailed
+		err = begin.Model(&models.InventoryHistoryDetailed{}).Where("order_id = ?", v.ID).Find(&ihd).Error
+		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				err = nil
+			} else {
+				log.Println(err)
+				return err
+			}
+		}
+
+		var totalPrice float64  // 總價
+		var totalCost float64   // 縂成本
+		var grossProfit float64 // 毛利
+		var numberProducts int  // 商品數量
+
+		for _, vc := range ihd {
+			totalCost += vc.TotalCost
+			totalPrice += vc.TotalPrice
+			grossProfit += vc.GrossProfit
+			numberProducts += vc.NumberProducts
+		}
+
+		err = begin.Model(&models.InventoryHistory{}).
+			Where("id = ?", v.ID).Updates(map[string]interface{}{
+			"total_price":     totalPrice,
+			"total_cost":      totalCost,
+			"gross_profit":    grossProfit,
+			"number_products": numberProducts,
+		}).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	var ins []models.Inventory
+	err = begin.Model(&models.Inventory{}).Find(&ins).Error
+	if err != nil {
+		return err
+	}
+
+	for _, v := range ins {
+		var ih []models.InventoryHistoryDetailed
+		err = begin.Model(&models.InventoryHistoryDetailed{}).
+			Where("account = ?", v.Account).Where("goods_id = ?", v.GoodsID).Find(&ih).Error
+		if err != nil {
+			return err
+		}
+
+		var quantity int // 库存数量
+		var cost float64 // 总成本
+
+		for _, vc := range ih {
+			switch vc.InventoryType {
+			case models.InventoryHistoryTypeWarehousing:
+				quantity += vc.NumberProducts
+				cost += vc.TotalCost
+			case models.InventoryHistoryTypeDepot:
+				quantity -= vc.NumberProducts
+				cost -= vc.TotalCost
+			}
+		}
+
+		err = begin.Model(&models.Inventory{}).Where("id = ?", v.ID).Updates(map[string]interface{}{
+			"quantity": quantity,
+			"cost":     cost,
+		}).Error
+		if err != nil {
+			return err
+		}
+	}
 
 	return
 }

@@ -33,11 +33,11 @@ const (
 type InventoryHistory struct {
 	BasicModel
 	InventoryType  InventoryHistoryType `gorm:"type:varchar(300);index" json:"inventory_type"`
-	Account        string               `gorm:"type:varchar(300);index" json:"account"`    // 創建用戶
-	TotalPrice     float64              `gorm:"type:NUMERIC(20,7)" json:"total_price"`     // 總價
-	TotalCost      float64              `gorm:"type:NUMERIC(20,7)" json:"total_cost"`      // 縂成本
-	GrossProfit    float64              `gorm:"type:NUMERIC(20,7)" json:"gross_profit"`    // 毛利
-	NumberProducts int                  `gorm:"type:NUMERIC(20,7)" json:"number_products"` // 商品數量
+	Account        string               `gorm:"type:varchar(300);index" json:"account"` // 創建用戶
+	TotalPrice     float64              `gorm:"type:NUMERIC(20,7)" json:"total_price"`  // 總價
+	TotalCost      float64              `gorm:"type:NUMERIC(20,7)" json:"total_cost"`   // 縂成本
+	GrossProfit    float64              `gorm:"type:NUMERIC(20,7)" json:"gross_profit"` // 毛利
+	NumberProducts int                  `gorm:"type:int8" json:"number_products"`       // 商品數量
 	Remark         string               `gorm:"type:varchar(700)" json:"remark"`
 }
 
