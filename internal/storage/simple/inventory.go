@@ -92,6 +92,19 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 		}
 	}()
 
+	var inv models.Inventory
+	err = begin.Model(&models.Inventory{}).
+		Where("goods_id = ?", goodsId).
+		Where("account = ?", account).First(&inv).Error
+	if err != nil {
+		return err
+	}
+
+	if inv.Cost != 0 && inv.Quantity != 0 {
+		cst := inv.Cost / float64(inv.Quantity) // 計算成本單價
+		cost = cst * float64(numberProducts)    // 計算成本
+	}
+
 	ihid := xid.New().String()
 	err = begin.Model(&models.InventoryHistory{}).Create(&models.InventoryHistory{
 		BasicModel:     models.BasicModel{ID: ihid},
@@ -120,14 +133,6 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 		NumberProducts: numberProducts,
 		Remark:         remark,
 	}).Error
-	if err != nil {
-		return err
-	}
-
-	var inv models.Inventory
-	err = begin.Model(&models.Inventory{}).
-		Where("goods_id = ?", goodsId).
-		Where("account = ?", account).First(&inv).Error
 	if err != nil {
 		return err
 	}
