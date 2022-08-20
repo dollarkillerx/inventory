@@ -20,7 +20,7 @@ func (s *Server) Goods(ctx *gin.Context) {
 func (s *Server) Search(ctx *gin.Context) {
 	model := utils.GetAuthModel(ctx)
 
-	keyword := ctx.Query("keyword")
+	keyword := strings.TrimSpace(ctx.Query("keyword"))
 	search, err := s.storage.Search(keyword, model.Account)
 	if err != nil {
 		response.Return(ctx, errs.BadRequest)

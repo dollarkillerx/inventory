@@ -4,6 +4,7 @@ import (
 	"github.com/dollarkillerx/inventory/internal/pkg/models"
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
+	"gorm.io/gorm"
 	"log"
 	"strings"
 )
@@ -256,6 +257,11 @@ func (s *Simple) ResetStatistics() (err error) {
 		}
 	}()
 
+	//err = s.resetStatisticsInternal(begin)
+	//if err != nil {
+	//	return err
+	//}
+
 	var ih []models.InventoryHistory
 	err = begin.Model(&models.InventoryHistory{}).Find(&ih).Error
 	if err != nil {
@@ -335,5 +341,40 @@ func (s *Simple) ResetStatistics() (err error) {
 		}
 	}
 
+	return
+}
+
+func (s *Simple) resetStatisticsInternal(db *gorm.DB) (err error) {
+	var ihd []models.InventoryHistoryDetailed
+	err = db.Model(&models.InventoryHistoryDetailed{}).Find(&ihd).Error
+	if err != nil {
+		return err
+	}
+
+	for _, v := range ihd {
+		var goods models.Goods
+		err = db.Model(&models.Goods{}).Where("id = ?", v.GoodsID).First(&goods).Error
+		if err != nil {
+			return err
+		}
+
+		var totalPrice float64  // 總價
+		var totalCost float64   // 縂成本
+		var grossProfit float64 // 毛利
+
+		totalPrice = goods.Price * float64(v.NumberProducts)
+		totalCost = goods.Cost * float64(v.NumberProducts)
+		grossProfit = totalPrice - totalCost
+
+		err = db.Model(&models.InventoryHistoryDetailed{}).
+			Where("id = ?", v.ID).Updates(map[string]interface{}{
+			"total_price":  totalPrice,
+			"total_cost":   totalCost,
+			"gross_profit": grossProfit,
+		}).Error
+		if err != nil {
+			return err
+		}
+	}
 	return
 }
