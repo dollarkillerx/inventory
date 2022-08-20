@@ -50,9 +50,10 @@ func (s *Simple) Good(barcodes string, account string) (*models.TemporaryGoodsIn
 			if err != nil {
 				return nil, err
 			}
+		} else {
+			log.Println(err)
+			return nil, err
 		}
-		log.Println(err)
-		return nil, err
 	}
 
 	return &models.TemporaryGoodsInventories{
