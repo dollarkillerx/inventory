@@ -40,16 +40,19 @@ func (s *Simple) Good(barcodes string, account string) (*models.TemporaryGoodsIn
 	var inv models.Inventory
 	err = s.DB().Model(&models.Inventory{}).Where("goods_id = ?", good.ID).Where("account = ?", account).First(&inv).Error
 	if err != nil {
-		log.Println(err)
-		err := s.DB().Model(&models.Inventory{}).Create(&models.Inventory{
-			BasicModel: models.BasicModel{ID: xid.New().String()},
-			GoodsID:    good.ID,
-			Barcode:    barcodes,
-			Account:    account,
-		}).Error
-		if err != nil {
-			return nil, err
+		if strings.Contains(err.Error(), "not found") {
+			err = s.DB().Model(&models.Inventory{}).Create(&models.Inventory{
+				BasicModel: models.BasicModel{ID: xid.New().String()},
+				GoodsID:    good.ID,
+				Barcode:    barcodes,
+				Account:    account,
+			}).Error
+			if err != nil {
+				return nil, err
+			}
 		}
+		log.Println(err)
+		return nil, err
 	}
 
 	return &models.TemporaryGoodsInventories{

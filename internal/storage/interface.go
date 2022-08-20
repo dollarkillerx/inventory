@@ -15,4 +15,7 @@ type Interface interface {
 	IOHistory(goodsID string, account string) ([]models.InventoryHistoryDetailed, error)
 	IORevoke(orderID string, account string) ([]models.InventoryHistoryDetailed, error)
 	ResetStatistics() (err error)
+
+	// Statistics ..
+	Statistics(account string) (scs []models.StatisticsBand, err error)
 }
