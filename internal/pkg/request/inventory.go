@@ -18,3 +18,8 @@ type OutStock struct {
 type IORevoke struct {
 	OrderID string `json:"order_id" binding:"required"`
 }
+
+type IOList struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}

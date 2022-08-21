@@ -14,6 +14,7 @@ type Interface interface {
 	OutStock(goodsId string, barcode string, account string, cost float64, numberProducts int, price float64, remark string) (err error)
 	IOHistory(goodsID string, account string) ([]models.InventoryHistoryDetailed, error)
 	IORevoke(orderID string, account string) ([]models.InventoryHistoryDetailed, error)
+	IOList(account string, limit int, offset int) (count int64, ids []models.InventoryHistoryDetailed, err error)
 	ResetStatistics() (err error)
 
 	// Statistics ..

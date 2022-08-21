@@ -48,10 +48,11 @@ type InventoryHistoryDetailed struct {
 	OrderID        string               `gorm:"type:varchar(300);index" json:"order_id"` // order id
 	Barcode        string               `gorm:"type:varchar(300);index" json:"barcode"`  // 條形碼
 	GoodsID        string               `gorm:"type:varchar(300);index" json:"goods_id"` // 商品
-	Account        string               `gorm:"type:varchar(300);index" json:"account"`  // 創建用戶
-	TotalPrice     float64              `gorm:"type:NUMERIC(20,7)" json:"total_price"`   // 總價
-	GrossProfit    float64              `gorm:"type:NUMERIC(20,7)" json:"gross_profit"`  // 毛利
-	TotalCost      float64              `gorm:"type:NUMERIC(20,7)" json:"total_cost"`    // 縂成本
-	NumberProducts int                  `gorm:"type:int(8)" json:"number_products"`      // 商品數量
+	GoodsName      string               `gorm:"-" json:"goods_name"`
+	Account        string               `gorm:"type:varchar(300);index" json:"account"` // 創建用戶
+	TotalPrice     float64              `gorm:"type:NUMERIC(20,7)" json:"total_price"`  // 總價
+	GrossProfit    float64              `gorm:"type:NUMERIC(20,7)" json:"gross_profit"` // 毛利
+	TotalCost      float64              `gorm:"type:NUMERIC(20,7)" json:"total_cost"`   // 縂成本
+	NumberProducts int                  `gorm:"type:int(8)" json:"number_products"`     // 商品數量
 	Remark         string               `gorm:"type:varchar(700)" json:"remark"`
 }

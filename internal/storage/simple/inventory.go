@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
 	"gorm.io/gorm"
+
 	"log"
 	"strings"
 )
@@ -381,5 +382,49 @@ func (s *Simple) resetStatisticsInternal(db *gorm.DB) (err error) {
 			return err
 		}
 	}
+	return
+}
+
+func (s *Simple) IOList(account string, limit int, offset int) (count int64, ids []models.InventoryHistoryDetailed, err error) {
+	err = s.db.Model(&models.InventoryHistoryDetailed{}).
+		Where("account = ?", account).
+		Count(&count).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	if limit <= 0 || limit > 20 {
+		limit = 20
+	}
+
+	err = s.db.Model(&models.InventoryHistoryDetailed{}).
+		Where("account = ?", account).
+		Limit(limit).Offset(offset).
+		Order("created_at desc").Find(&ids).Error
+
+	var cmap = map[string]struct{}{}
+	for _, v := range ids {
+		cmap[v.GoodsID] = struct{}{}
+	}
+
+	var goodsList []string
+	for k := range cmap {
+		goodsList = append(goodsList, k)
+	}
+
+	var goods []models.Goods
+	err = s.db.Model(&models.Goods{}).Where("id in ?", goodsList).Find(&goods).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	for i, v := range ids {
+		for _, vc := range goods {
+			if v.GoodsID == vc.ID {
+				ids[i].GoodsName = vc.Name
+			}
+		}
+	}
+
 	return
 }

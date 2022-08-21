@@ -94,3 +94,25 @@ func (s *Server) iORevoke(ctx *gin.Context) {
 
 	response.Return(ctx, revoke)
 }
+
+func (s *Server) ioList(ctx *gin.Context) {
+	model := utils.GetAuthModel(ctx)
+
+	var payload request.IOList
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		response.Return(ctx, errs.BadRequest)
+		return
+	}
+
+	count, ids, err := s.storage.IOList(model.Account, payload.Limit, payload.Offset)
+	if err != nil {
+		log.Println(err)
+		response.Return(ctx, errs.SqlSystemError)
+		return
+	}
+
+	response.Return(ctx, response.IOList{
+		Count: count,
+		Items: ids,
+	})
+}
