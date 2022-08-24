@@ -4,6 +4,10 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
+	"log"
+	"strings"
+	"time"
+
 	"github.com/dollarkillerx/inventory/internal/pkg/errs"
 	"github.com/dollarkillerx/inventory/internal/pkg/models"
 	"github.com/dollarkillerx/inventory/internal/pkg/request"
@@ -11,10 +15,6 @@ import (
 	"github.com/dollarkillerx/inventory/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/xid"
-	"time"
-
-	"log"
-	"strings"
 )
 
 func (s *Server) Goods(ctx *gin.Context) {
@@ -120,7 +120,9 @@ func (s *Server) coreExport(ctx *gin.Context) {
 
 	var ins []models.Inventory
 	err = s.storage.DB().Model(&models.Inventory{}).
-		Where("account = ?", payload.Account).Order("created_at desc").Find(&ins).Error
+		Where("account = ?", payload.Account).
+		Where("quantity != 0").
+		Order("created_at desc").Find(&ins).Error
 	if err != nil {
 		log.Println(err)
 		response.Return(ctx, errs.SqlSystemError)
