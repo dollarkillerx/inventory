@@ -144,7 +144,7 @@ func (s *Server) coreExport(ctx *gin.Context) {
 
 	var css = bytes.NewBuffer([]byte(""))
 	fw := csv.NewWriter(css)
-	fw.Write([]string{"创建时间: ", fmt.Sprintf("%s", time.Now().Format("2006-01-02")), "店铺: ", fmt.Sprintf("%s--%s", uc.Storehouse, payload.Account)})
+	fw.Write([]string{"创建时间: ", fmt.Sprintf("%s", time.Now().Format("2006-01-02")), "店铺: ", fmt.Sprintf("%s", uc.Storehouse), fmt.Sprintf("%s", payload.Account)})
 	fw.Write([]string{"Barcode", "商品名称", "库存数量", "总成本", "更新时期"})
 	for _, v := range ins {
 		fw.Write([]string{fmt.Sprintf("'%s", v.Barcode), vm[v.GoodsID], fmt.Sprintf("%d", v.Quantity), fmt.Sprintf("%.2f", v.Cost), v.UpdatedAt.Format("2006-01-02")})
