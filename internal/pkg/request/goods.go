@@ -10,3 +10,8 @@ type AddGoods struct {
 	MadeIn  string  `json:"made_in" `
 	Img     string  `json:"img" `
 }
+
+type CoreExport struct {
+	Account  string `json:"account" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
