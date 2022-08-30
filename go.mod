@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/dollarkillerx/jwt v0.0.4
 	github.com/gin-gonic/gin v1.8.1
+	github.com/google/uuid v1.1.1
 	github.com/pkg/errors v0.8.1
 	github.com/rs/xid v1.4.0
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.35
