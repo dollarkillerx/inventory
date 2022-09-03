@@ -27,6 +27,13 @@ func (s *Simple) Search(keyword string, account string) ([]models.TemporaryGoods
 		}
 	}
 
+	for i, k := range goods {
+		if k.TotalCost > 0 {
+			cost := k.TotalCost / float64(k.Quantity)
+			goods[i].Cost = cost
+		}
+	}
+
 	return goods, nil
 }
 

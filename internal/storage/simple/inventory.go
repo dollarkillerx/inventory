@@ -101,7 +101,7 @@ func (s *Simple) OutStock(goodsId string, barcode string, account string, cost f
 		return err
 	}
 
-	if inv.Cost != 0 && inv.Quantity != 0 {
+	if inv.Cost > 0 && inv.Quantity > 0 {
 		cst := inv.Cost / float64(inv.Quantity) // 計算成本單價
 		cost = cst * float64(numberProducts)    // 計算成本
 	}
