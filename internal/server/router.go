@@ -12,6 +12,7 @@ func (s *Server) router() {
 
 	s.app.GET("/export", s.export)
 	s.app.GET("/export_core/:account/:password", s.coreExport)
+	//s.app.GET("/good/:store")
 
 	v1 := s.app.Group("/api/v1", middleware.UAAuthorization())
 	{
