@@ -19,6 +19,7 @@ func (s *Server) router() {
 		v1.GET("/search", s.search)                  // 搜索商品
 		v1.GET("/goods", s.goods)                    // 所有商品
 		v1.GET("/good/:barcodes", s.good)            // 更具条码查询单个商品
+		v1.DELETE("/good/:goodID", s.deleteGood)     // 删除商品&所有关系
 		v1.POST("/good", s.addGood)                  // 添加商品
 		v1.POST("/good/update", s.upGood)            // 更新商品
 		v1.POST("/upload", s.uploadFile)             // 上传图片

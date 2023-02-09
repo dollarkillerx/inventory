@@ -58,6 +58,20 @@ func (s *Server) good(ctx *gin.Context) {
 	response.Return(ctx, good)
 }
 
+func (s *Server) deleteGood(ctx *gin.Context) {
+	model := utils.GetAuthModel(ctx)
+
+	goodID := ctx.Param("goodID")
+	err := s.storage.DeleteGood(goodID, model.Account)
+	if err != nil {
+		log.Println(err)
+		response.Return(ctx, errs.BadRequest)
+		return
+	}
+
+	response.Return(ctx, gin.H{})
+}
+
 func (s *Server) addGood(ctx *gin.Context) {
 	model := utils.GetAuthModel(ctx)
 
@@ -109,7 +123,8 @@ func (s *Server) upGood(ctx *gin.Context) {
 	}
 
 	err := s.storage.DB().Model(&models.Goods{}).
-		Where("id = ?", good.ID).Updates(&models.Goods{
+		Where("id = ?", good.ID).
+		Where("by_account = ?", model.Account).Updates(&models.Goods{
 		Name:      good.Name,
 		Spec:      good.Spec,
 		Cost:      good.Cost,

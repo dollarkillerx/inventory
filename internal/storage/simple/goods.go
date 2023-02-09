@@ -2,7 +2,9 @@ package simple
 
 import (
 	"github.com/dollarkillerx/inventory/internal/pkg/models"
+	"github.com/pkg/errors"
 	"github.com/rs/xid"
+	"gorm.io/gorm"
 
 	"log"
 	"strings"
@@ -10,6 +12,60 @@ import (
 
 func (s *Simple) Goods() {
 
+}
+
+func (s *Simple) DeleteGood(goodID string, account string) (err error) {
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		// 涉及到的关联表
+
+		// 1. goods 商品表
+		var good models.Goods
+		err = tx.Model(&models.Goods{}).
+			Where("id = ?", goodID).Where("by_account = ?", account).First(&good).Error
+		if err != nil {
+			return err
+		}
+
+		if good.ByAccount != account || good.ID != goodID {
+			return errors.New("非法请求")
+		}
+
+		err = tx.Model(&models.Goods{}).
+			Where("id = ?", goodID).Where("by_account = ?", account).Unscoped().Delete(&models.Goods{}).Error
+		if err != nil {
+			return err
+		}
+
+		// 2. inventory 库存表
+		err = tx.Model(&models.Inventory{}).
+			Where("goods_id = ?", goodID).Unscoped().Delete(&models.Inventory{}).Error
+		if err != nil {
+			return err
+		}
+
+		// 3. InventoryModify 修改库存
+		err = tx.Model(&models.InventoryModify{}).
+			Where("goods_id = ?", goodID).Unscoped().Delete(&models.InventoryModify{}).Error
+		if err != nil {
+			return err
+		}
+
+		//        // 4. InventoryHistory 庫存記錄
+		//        err = tx.Model(&models.InventoryHistory{}).
+		//            Where("goods_id = ?", goodID).Delete(&models.InventoryModify{}).Error
+		//        if err != nil {
+		//            return err
+		//        }
+
+		// 5. InventoryHistoryDetailed 庫存記錄詳細
+		err = tx.Model(&models.InventoryHistoryDetailed{}).
+			Where("goods_id = ?", goodID).Unscoped().Delete(&models.InventoryModify{}).Error
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (s *Simple) Search(keyword string, account string) ([]models.TemporaryGoodsInventories, error) {
