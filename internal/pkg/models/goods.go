@@ -12,6 +12,7 @@ type Goods struct {
 	MadeIn    string  `gorm:"type:varchar(600)" json:"made_in"`             // 產地
 	Img       string  `gorm:"type:varchar(600)" json:"img"`                 // img
 	ByAccount string  `gorm:"type:varchar(300);index" json:"by_account"`    // 創建用戶
+	UpAccount string  `gorm:"type:varchar(300)" json:"up_account"`          // 更新用戶
 }
 
 type TemporaryGoodsInventories struct {

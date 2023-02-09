@@ -17,11 +17,11 @@ import (
 	"github.com/rs/xid"
 )
 
-func (s *Server) Goods(ctx *gin.Context) {
+func (s *Server) goods(ctx *gin.Context) {
 	//model := utils.GetAuthModel(ctx)
 }
 
-func (s *Server) Search(ctx *gin.Context) {
+func (s *Server) search(ctx *gin.Context) {
 	model := utils.GetAuthModel(ctx)
 
 	keyword := strings.TrimSpace(ctx.Query("keyword"))
@@ -31,10 +31,16 @@ func (s *Server) Search(ctx *gin.Context) {
 		return
 	}
 
+	for i, v := range search {
+		if strings.TrimSpace(v.Img) == "" {
+			search[i].Img = "https://jkl-1253341723.cos.ap-chengdu.myqcloud.com/default.png"
+		}
+	}
+
 	response.Return(ctx, search)
 }
 
-func (s *Server) Good(ctx *gin.Context) {
+func (s *Server) good(ctx *gin.Context) {
 	model := utils.GetAuthModel(ctx)
 
 	barcodes := ctx.Param("barcodes")
@@ -46,10 +52,13 @@ func (s *Server) Good(ctx *gin.Context) {
 	}
 
 	// https://jkl-1253341723.cos.ap-chengdu.myqcloud.com/default.png
+	if strings.TrimSpace(good.Img) == "" {
+		good.Img = "https://jkl-1253341723.cos.ap-chengdu.myqcloud.com/default.png"
+	}
 	response.Return(ctx, good)
 }
 
-func (s *Server) AddGood(ctx *gin.Context) {
+func (s *Server) addGood(ctx *gin.Context) {
 	model := utils.GetAuthModel(ctx)
 
 	var good request.AddGoods
@@ -81,6 +90,40 @@ func (s *Server) AddGood(ctx *gin.Context) {
 			response.Return(ctx, errs.NewError("4002", "商品以存在"))
 			return
 		}
+		log.Println(err)
+		response.Return(ctx, errs.SqlSystemError)
+		return
+	}
+
+	response.Return(ctx, gin.H{})
+}
+
+// 更新商品
+func (s *Server) upGood(ctx *gin.Context) {
+	model := utils.GetAuthModel(ctx)
+	var good request.ModifyGoods
+	if err := ctx.ShouldBindJSON(&good); err != nil {
+		log.Println(err)
+		response.Return(ctx, errs.BadRequest)
+		return
+	}
+
+	err := s.storage.DB().Model(&models.Goods{}).
+		Where("id = ?", good.ID).Updates(&models.Goods{
+		Name:      good.Name,
+		Spec:      good.Spec,
+		Cost:      good.Cost,
+		Price:     good.Price,
+		Brand:     good.Brand,
+		MadeIn:    good.MadeIn,
+		Img:       good.Img,
+		UpAccount: model.Account,
+	}).Error
+	if err != nil {
+		//        if strings.Contains(err.Error(), "unique") {
+		//            response.Return(ctx, errs.NewError("4002", "商品以存在"))
+		//            return
+		//        }
 		log.Println(err)
 		response.Return(ctx, errs.SqlSystemError)
 		return

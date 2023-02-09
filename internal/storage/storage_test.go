@@ -17,7 +17,7 @@ func TestStorage(t *testing.T) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	//good, err := s.Good("8801116016730", "10086")
+	//good, err := s.good("8801116016730", "10086")
 	//if err != nil {
 	//	log.Fatalln(err)
 	//}

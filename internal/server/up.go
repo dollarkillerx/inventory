@@ -18,7 +18,7 @@ import (
 	"github.com/tencentyun/cos-go-sdk-v5/debug"
 )
 
-func (s *Server) UploadFile(ctx *gin.Context) {
+func (s *Server) uploadFile(ctx *gin.Context) {
 	file, err := ctx.FormFile("imgFile")
 	if err != nil {
 		response.Return(ctx, errs.BadRequest)
