@@ -124,16 +124,17 @@ func (s *Server) upGood(ctx *gin.Context) {
 
 	err := s.storage.DB().Model(&models.Goods{}).
 		Where("id = ?", good.ID).
-		Where("by_account = ?", model.Account).Updates(&models.Goods{
-		Name:      good.Name,
-		Spec:      good.Spec,
-		Cost:      good.Cost,
-		Price:     good.Price,
-		Brand:     good.Brand,
-		MadeIn:    good.MadeIn,
-		Img:       good.Img,
-		UpAccount: model.Account,
-	}).Error
+		//Where("by_account = ?", model.Account).
+		Updates(&models.Goods{
+			Name:      good.Name,
+			Spec:      good.Spec,
+			Cost:      good.Cost,
+			Price:     good.Price,
+			Brand:     good.Brand,
+			MadeIn:    good.MadeIn,
+			Img:       good.Img,
+			UpAccount: model.Account,
+		}).Error
 	if err != nil {
 		//        if strings.Contains(err.Error(), "unique") {
 		//            response.Return(ctx, errs.NewError("4002", "商品以存在"))

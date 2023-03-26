@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  inventory:
+    image: inventory:0.0.1
+    container_name: inventory
+    restart: always
+    network_mode: "host"
+    volumes:
+      - ./configs/:/app/configs

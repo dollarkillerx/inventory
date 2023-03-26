@@ -40,10 +40,10 @@ func init() {
 func initConf() {
 	var cf conf
 
-	file, err := ioutil.ReadFile("config.json")
+	file, err := ioutil.ReadFile("configs/config.json")
 	if err != nil {
 		marshal, _ := json.MarshalIndent(cf, " ", "  ")
-		if err2 := ioutil.WriteFile("config.json", marshal, 00666); err2 != nil {
+		if err2 := ioutil.WriteFile("configs/config.json", marshal, 00666); err2 != nil {
 			log.Fatalln(err2)
 		}
 		log.Fatalln(err)

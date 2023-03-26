@@ -31,7 +31,9 @@ func (s *Simple) DeleteGood(goodID string, account string) (err error) {
 		}
 
 		err = tx.Model(&models.Goods{}).
-			Where("id = ?", goodID).Where("by_account = ?", account).Unscoped().Delete(&models.Goods{}).Error
+			Where("id = ?", goodID).
+			//Where("by_account = ?", account).
+			Unscoped().Delete(&models.Goods{}).Error
 		if err != nil {
 			return err
 		}
