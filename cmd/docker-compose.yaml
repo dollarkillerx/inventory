@@ -4,6 +4,8 @@ services:
     image: inventory:0.0.1
     container_name: inventory
     restart: always
-    network_mode: "host"
+#    network_mode: "host"
     volumes:
       - ./configs/:/app/configs
+    ports:
+      - 8474:8474

@@ -21,12 +21,15 @@ func (s *Simple) DeleteGood(goodID string, account string) (err error) {
 		// 1. goods 商品表
 		var good models.Goods
 		err = tx.Model(&models.Goods{}).
-			Where("id = ?", goodID).Where("by_account = ?", account).First(&good).Error
+			Where("id = ?", goodID).
+			//Where("by_account = ?", account).
+			First(&good).Error
 		if err != nil {
 			return err
 		}
 
-		if good.ByAccount != account || good.ID != goodID {
+		//if good.ByAccount != account || good.ID != goodID {
+		if good.ID != goodID {
 			return errors.New("非法请求")
 		}
 
